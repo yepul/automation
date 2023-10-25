@@ -16,6 +16,16 @@ function showLoader() {
   }, 200);
 }
 
+// Function to clear the contents of the image folder
+function clearImageFolder() {
+  const imageFolder = path.join(__dirname, "image");
+
+  fs.readdirSync(imageFolder).forEach((file) => {
+    const filePath = path.join(imageFolder, file);
+    fs.unlinkSync(filePath);
+  });
+}
+
 async function captureAndSaveScreenshots(urls) {
   const loadingInterval = showLoader();
 
@@ -88,6 +98,9 @@ async function captureAndSaveScreenshots(urls) {
   // Save the Excel file
   await workbook.xlsx.writeFile("excel/" + timestamp + ".xlsx");
   console.log("Excel file with screenshots and data saved.");
+
+  // Clear the contents of the image folder
+  clearImageFolder();
 }
 
 const urlsToCapture = [
