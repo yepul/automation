@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DSP Card</title>
+  </head>
+  <body>
+    <div class="card">
+      <h1>DSP</h1>
+      <button id="startButton">Start</button>
+      <button id="stopButton" disabled>Stop</button>
+      <p id="timer">Time: 0 seconds</p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(() => {
+        let timerInterval;
+        let timer = 0;
+        let running = false;
+
+        $("#startButton").click(() => {
+          if (!running) {
+            running = true;
+            $("#startButton").prop("disabled", true);
+            $("#stopButton").prop("disabled", false);
+            timerInterval = setInterval(() => {
+              timer++;
+              $("#timer").text(`Time: ${timer} seconds`);
+            }, 1000);
+
+            // Make an API call to start the process
+            $.get("/start", (data) => {
+              $("#timer").text(`Time: ${data.elapsedTime} seconds`);
+            });
+          }
+        });
+
+        $("#stopButton").click(() => {
+          running = false;
+          clearInterval(timerInterval);
+          $("#startButton").prop("disabled", false);
+          $("#stopButton").prop("disabled", true);
+        });
+      });
+    </script>
+  </body>
+</html>
