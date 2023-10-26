@@ -1,21 +1,22 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const app = express();
 const port = 3000;
 
-// Set EJS as the template engine
-app.set("view engine", "ejs");
-
-// Specify the 'views' directory
 app.set("views", path.join(__dirname, "views"));
 
-app.use(express.static("public")); // Serve your static files
+app.use(express.static("public"));
 
-// Require automationRunner.js to run the automation script
 const runAutomation = require("./automationRunner");
 
 app.get("/", (req, res) => {
-  res.render("index");
+  const htmlContent = fs.readFileSync(
+    path.join(__dirname, "views", "index.html"),
+    "utf8"
+  );
+
+  res.send(htmlContent);
 });
 
 app.get("/run-automation", (req, res) => {
