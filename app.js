@@ -1,40 +1,34 @@
 const express = require("express");
-const app = express();
 const path = require("path");
-const { spawn } = require("child_process");
+const app = express();
+const port = 3000;
 
-// Set up the view engine and views directory
+// Set EJS as the template engine
 app.set("view engine", "ejs");
+
+// Specify the 'views' directory
 app.set("views", path.join(__dirname, "views"));
 
-// Serve static files (CSS, JS, etc.) from a public directory
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public")); // Serve your static files
 
-// Define routes
+// Require automationRunner.js to run the automation script
+const runAutomation = require("./automationRunner");
+
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-// Handle the "Start" button click
-app.get("/start", (req, res) => {
-  // Execute the external script using child_process.spawn
-  const scriptPath = path.join(__dirname, "script.js");
-  const startTime = new Date();
-
-  const scriptProcess = spawn("node", [scriptPath]);
-
-  scriptProcess.stdout.on("data", (data) => {
-    // Calculate the time elapsed
-    const currentTime = new Date();
-    const elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
-
-    // Send the elapsed time to the client
-    res.json({ elapsedTime: elapsedSeconds });
-  });
+app.get("/run-automation", (req, res) => {
+  runAutomation()
+    .then((result) => {
+      res.json({ result });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      res.status(500).json({ error: "An error occurred during automation." });
+    });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });

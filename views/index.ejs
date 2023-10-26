@@ -1,47 +1,50 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DSP Card</title>
+    <title>Automation Page</title>
   </head>
   <body>
-    <div class="card">
-      <h1>DSP</h1>
-      <button id="startButton">Start</button>
-      <button id="stopButton" disabled>Stop</button>
-      <p id="timer">Time: 0 seconds</p>
-    </div>
+    <h1>Automation Page</h1>
+    <button id="startButton">Start Automation</button>
+    <div id="loader" style="display: none">Loading...</div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-      $(document).ready(() => {
-        let timerInterval;
-        let timer = 0;
-        let running = false;
+      document
+        .getElementById("startButton")
+        .addEventListener("click", function () {
+          // Show loader
+          document.getElementById("loader").style.display = "block";
 
-        $("#startButton").click(() => {
-          if (!running) {
-            running = true;
-            $("#startButton").prop("disabled", true);
-            $("#stopButton").prop("disabled", false);
-            timerInterval = setInterval(() => {
-              timer++;
-              $("#timer").text(`Time: ${timer} seconds`);
-            }, 1000);
+          // Call the function from automation.js
+          runAutomation(function (result) {
+            // Hide loader when automation is done
+            document.getElementById("loader").style.display = "none";
 
-            // Make an API call to start the process
-            $.get("/start", (data) => {
-              $("#timer").text(`Time: ${data.elapsedTime} seconds`);
+            if (result === 0) {
+              alert("Automation completed successfully.");
+            } else {
+              alert("Automation encountered an error.");
+            }
+          });
+        });
+
+      function runAutomation(callback) {
+        // Simulated asynchronous task
+        setTimeout(function () {
+          // Replace this with an actual AJAX call to your Node.js server
+          fetch("/run-automation") // Assuming you have a server route to execute automation
+            .then((response) => response.json())
+            .then((result) => {
+              // Call the callback function to notify the EJS page of the result
+              callback(result);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              // Return an error code (or handle it as needed)
+              callback(1);
             });
-          }
-        });
-
-        $("#stopButton").click(() => {
-          running = false;
-          clearInterval(timerInterval);
-          $("#startButton").prop("disabled", false);
-          $("#stopButton").prop("disabled", true);
-        });
-      });
+        }, 2000); // Simulated 2-second automation task
+      }
     </script>
   </body>
 </html>
