@@ -3,6 +3,11 @@
   <head>
     <title>Automation Page</title>
   </head>
+  <link
+    rel="shortcut icon"
+    href="https://www.etiqa.com.my/infosite/assets/img/favicon.ico"
+    type="image/x-icon"
+  />
   <body>
     <h1>Automation Page</h1>
     <button id="startButton">Start Automation</button>
@@ -20,10 +25,8 @@
             // Hide loader when automation is done
             document.getElementById("loader").style.display = "none";
 
-            if (result === 0) {
+            if (result) {
               alert("Automation completed successfully.");
-            } else {
-              alert("Automation encountered an error.");
             }
           });
         });
